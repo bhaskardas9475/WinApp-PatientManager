@@ -10,7 +10,7 @@ const { SQLiteModule } = NativeModules;
 
 /**
  * Interface for database row results.
- * Since the C++ bridge returns a JSON string, we parse it into objects.
+ * The native bridge returns rows as plain JS objects.
  */
 export interface QueryResult {
   [key: string]: string | number | null;
@@ -54,8 +54,7 @@ export const execute = async (sql: string): Promise<string> => {
  */
 export const query = async (sql: string): Promise<QueryResult[]> => {
   try {
-    const jsonString = await SQLiteModule.query(sql);
-    return JSON.parse(jsonString);
+    return await SQLiteModule.query(sql);
   } catch (error) {
     console.error("SQL Query Error:", error);
     throw error;

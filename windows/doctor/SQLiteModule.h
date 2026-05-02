@@ -2,7 +2,6 @@
 #include "NativeModules.h"
 #include "sqlite/sqlite3.h"
 #include <string>
-#include <vector>
 
 namespace winrt::NativeModuleSampleExample {
     REACT_MODULE(SQLiteModule)
@@ -35,9 +34,11 @@ namespace winrt::NativeModuleSampleExample {
         }
 
         REACT_METHOD(query)
-            void query(std::string sql, winrt::Microsoft::ReactNative::ReactPromise<std::string> promise) noexcept {
-            sqlite3* db;
-            sqlite3_stmt* stmt;
+            void query(
+                std::string sql,
+                winrt::Microsoft::ReactNative::ReactPromise<winrt::Microsoft::ReactNative::JSValueArray> promise) noexcept {
+            sqlite3* db = nullptr;
+            sqlite3_stmt* stmt = nullptr;
 
             if (sqlite3_open("AppDatabase.db", &db) != SQLITE_OK) {
                 promise.Reject("Failed to open DB");
@@ -50,28 +51,59 @@ namespace winrt::NativeModuleSampleExample {
                 return;
             }
 
-            // Simple JSON construction (For testing. Real apps use a JSON library like nlohmann/json)
-            std::string json = "[";
-            bool firstRow = true;
+            winrt::Microsoft::ReactNative::JSValueArray rows;
 
-            while (sqlite3_step(stmt) == SQLITE_ROW) {
-                if (!firstRow) json += ",";
-                json += "{";
+            while (true) {
+                const int result = sqlite3_step(stmt);
+                if (result == SQLITE_DONE) {
+                    break;
+                }
+
+                if (result != SQLITE_ROW) {
+                    promise.Reject(sqlite3_errmsg(db));
+                    sqlite3_finalize(stmt);
+                    sqlite3_close(db);
+                    return;
+                }
+
+                winrt::Microsoft::ReactNative::JSValueObject row;
                 int cols = sqlite3_column_count(stmt);
                 for (int i = 0; i < cols; i++) {
-                    if (i > 0) json += ",";
-                    std::string colName = (char*)sqlite3_column_name(stmt, i);
-                    std::string colVal = (char*)sqlite3_column_text(stmt, i);
-                    json += "\"" + colName + "\":\"" + colVal + "\"";
+                    const char* columnName = sqlite3_column_name(stmt, i);
+                    std::string key = columnName ? columnName : "";
+
+                    switch (sqlite3_column_type(stmt, i)) {
+                    case SQLITE_INTEGER:
+                        row[key] = static_cast<int64_t>(sqlite3_column_int64(stmt, i));
+                        break;
+                    case SQLITE_FLOAT:
+                        row[key] = sqlite3_column_double(stmt, i);
+                        break;
+                    case SQLITE_TEXT: {
+                        const auto* text = reinterpret_cast<const char*>(sqlite3_column_text(stmt, i));
+                        row[key] = text ? text : "";
+                        break;
+                    }
+                    case SQLITE_NULL:
+                        row[key] = nullptr;
+                        break;
+                    case SQLITE_BLOB: {
+                        const auto* blob = reinterpret_cast<const char*>(sqlite3_column_text(stmt, i));
+                        row[key] = blob ? blob : "";
+                        break;
+                    }
+                    default:
+                        row[key] = nullptr;
+                        break;
+                    }
                 }
-                json += "}";
-                firstRow = false;
+
+                rows.push_back(std::move(row));
             }
-            json += "]";
 
             sqlite3_finalize(stmt);
             sqlite3_close(db);
-            promise.Resolve(json);
+            promise.Resolve(std::move(rows));
         }
     };
 }

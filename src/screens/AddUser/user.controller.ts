@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { execute, query, QueryResult } from "@/db";
 import { Toast } from "@/components/Toast";
+import { escapeSqlValue } from "@/utils/common.utils";
 
+export const TABLE_NAME = "users";
+
+export const USER_MIGRATION = `CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, gender TEXT, comment TEXT)`;
 export interface UserRecord {
   id: number;
   name: string;
@@ -24,8 +28,6 @@ const defaultFormValues: UserFormValues = {
   comment: "",
 };
 
-const escapeSqlValue = (value: string) => value.replace(/'/g, "''");
-
 const mapUser = (row: QueryResult): UserRecord => ({
   id: Number(row.id),
   name: String(row.name ?? ""),
@@ -46,7 +48,7 @@ export const useAddUserController = () => {
     setLoading(true);
     try {
       const rows = await query(
-        "SELECT id, name, phone, gender, comment FROM users ORDER BY id DESC",
+        `SELECT id, name, phone, gender, comment FROM ${TABLE_NAME} ORDER BY id DESC`,
       );
       setUsers(rows.map(mapUser));
     } catch (error) {
@@ -102,11 +104,11 @@ export const useAddUserController = () => {
 
       if (editingUserId === null) {
         await execute(
-          `INSERT INTO users (name, phone, gender, comment) VALUES ('${name}', '${phone}', '${gender}', '${comment}')`,
+          `INSERT INTO ${TABLE_NAME} (name, phone, gender, comment) VALUES ('${name}', '${phone}', '${gender}', '${comment}')`,
         );
       } else {
         await execute(
-          `UPDATE users SET name='${name}', phone='${phone}', gender='${gender}', comment='${comment}' WHERE id=${editingUserId}`,
+          `UPDATE ${TABLE_NAME} SET name='${name}', phone='${phone}', gender='${gender}', comment='${comment}' WHERE id=${editingUserId}`,
         );
       }
 
@@ -125,7 +127,7 @@ export const useAddUserController = () => {
   const deleteUser = useCallback(
     async (id: number) => {
       try {
-        await execute(`DELETE FROM users WHERE id=${id}`);
+        await execute(`DELETE FROM ${TABLE_NAME} WHERE id=${id}`);
         if (editingUserId === id) {
           resetForm();
         }
