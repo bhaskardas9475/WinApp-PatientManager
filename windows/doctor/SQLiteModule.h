@@ -1,19 +1,30 @@
 #pragma once
 #include "NativeModules.h"
 #include "sqlite/sqlite3.h"
+#include <winrt/Windows.Storage.h>
 #include <string>
 
 namespace winrt::NativeModuleSampleExample {
     REACT_MODULE(SQLiteModule)
         struct SQLiteModule {
 
+        static std::wstring GetDatabasePath() noexcept {
+            const auto localFolder = winrt::Windows::Storage::ApplicationData::Current().LocalFolder();
+            return localFolder.Path().c_str() + std::wstring(L"\\AppDatabase.db");
+        }
+
+        static bool OpenDatabase(sqlite3** db) noexcept {
+            const std::wstring databasePath = GetDatabasePath();
+            return sqlite3_open16(databasePath.c_str(), db) == SQLITE_OK;
+        }
+
         // Executes a SQL command (CREATE, INSERT, UPDATE, DELETE)
         REACT_METHOD(execute)
             void execute(std::string query, winrt::Microsoft::ReactNative::ReactPromise<std::string> promise) noexcept {
-            sqlite3* db;
+            sqlite3* db = nullptr;
 
             // Open Database
-            if (sqlite3_open("AppDatabase.db", &db) != SQLITE_OK) {
+            if (!OpenDatabase(&db)) {
                 promise.Reject("Failed to open database");
                 return;
             }
@@ -40,7 +51,7 @@ namespace winrt::NativeModuleSampleExample {
             sqlite3* db = nullptr;
             sqlite3_stmt* stmt = nullptr;
 
-            if (sqlite3_open("AppDatabase.db", &db) != SQLITE_OK) {
+            if (!OpenDatabase(&db)) {
                 promise.Reject("Failed to open DB");
                 return;
             }
