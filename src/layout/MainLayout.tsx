@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 
-import Dashboard from "../screens/Dashboard";
-import CreatePrescription from "../screens/CreatePrescription";
-import AddUser from "../screens/AddUser";
-import AddTests from "../screens/AddTests";
-import AddMedicine from "../screens/AddMedicine";
-import Sidebar from "../components/Sidebar";
-import Preview from "../components/preview";
+import Dashboard from "@/screens/Dashboard";
+import CreatePrescription from "@/screens/CreatePrescription";
+import AddUser from "@/screens/AddUser";
+import AddTests from "@/screens/AddTests";
+import AddMedicine from "@/screens/AddMedicine";
+import Sidebar from "@/components/Sidebar";
+import Preview from "@/components/preview";
 
 type ScreenKey =
   | "dashboard"
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: "#f3f3f3",
+    backgroundColor: "#e1e1e1",
   },
   content: {
     flex: 1,

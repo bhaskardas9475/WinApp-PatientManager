@@ -12,6 +12,7 @@ interface ButtonProps {
   onPress?: () => void;
   variant?: "primary" | "secondary" | "danger";
   disabled?: boolean;
+  small?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
 }
@@ -21,6 +22,7 @@ export const Button: React.FC<ButtonProps> = ({
   onPress,
   variant = "primary",
   disabled = false,
+  small = false,
   style,
   textStyle,
 }) => {
@@ -28,12 +30,26 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.button, variantStyle.button, style]}
+      style={[
+        styles.button,
+        variantStyle.button,
+        small ? styles.smallStyle : null,
+        style,
+      ]}
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.7}
     >
-      <Text style={[styles.text, variantStyle.text, textStyle]}>{title}</Text>
+      <Text
+        style={[
+          styles.text,
+          variantStyle.text,
+          small ? styles.smallText : null,
+          textStyle,
+        ]}
+      >
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -85,9 +101,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
+    cursor: "pointer",
   },
   text: {
     fontSize: 16,
     fontWeight: "600",
+  },
+  smallStyle: {
+    paddingHorizontal: 5,
+    paddingVertical: 3,
+  },
+  smallText: {
+    fontSize: 12,
   },
 });

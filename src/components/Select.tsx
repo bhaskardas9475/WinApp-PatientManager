@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -37,6 +37,10 @@ export const Select: React.FC<SelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  useEffect(() => {
+    setSelected(selectedValue || options[0]?.value || "");
+  }, [options, selectedValue]);
+
   const selectedLabel =
     options.find((opt) => opt.value === selected)?.label || placeholder;
 
@@ -63,7 +67,7 @@ export const Select: React.FC<SelectProps> = ({
         activeOpacity={0.7}
       >
         <Text style={styles.selectButtonText}>{selectedLabel}</Text>
-        <Text style={[styles.selectArrow]}>{isOpen ? "▲" : "▼"}</Text>
+        <Text style={styles.selectArrow}>{isOpen ? "^" : "v"}</Text>
       </TouchableOpacity>
 
       {isOpen && (
@@ -144,9 +148,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#999",
     marginLeft: 8,
-  },
-  selectArrowOpen: {
-    transform: [{ rotate: "180deg" }],
   },
   searchContainer: {
     borderBottomWidth: 1,

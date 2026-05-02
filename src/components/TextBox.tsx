@@ -16,10 +16,12 @@ export const TextBox: React.FC<TextBoxProps> = ({
   onChangeText,
   secureTextEntry = false,
 }) => {
-  const [text, setText] = useState(value || "");
+  const [text, setText] = useState("");
 
   const handleChange = (newText: string) => {
-    setText(newText);
+    if (value === undefined) {
+      setText(newText);
+    }
     onChangeText?.(newText);
   };
 
@@ -30,7 +32,7 @@ export const TextBox: React.FC<TextBoxProps> = ({
         style={styles.input}
         placeholder={placeholder}
         placeholderTextColor="#999"
-        value={text}
+        value={value ?? text}
         onChangeText={handleChange}
         secureTextEntry={secureTextEntry}
       />

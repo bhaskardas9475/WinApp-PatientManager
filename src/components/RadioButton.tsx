@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 
 interface RadioButtonProps {
@@ -8,6 +8,7 @@ interface RadioButtonProps {
 }
 
 interface RadioGroupProps {
+  label?: string;
   options: Array<{ label: string; value: string }>;
   selectedValue?: string;
   onSelect?: (value: string) => void;
@@ -33,11 +34,16 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
 };
 
 export const RadioGroup: React.FC<RadioGroupProps> = ({
+  label,
   options,
   selectedValue,
   onSelect,
 }) => {
   const [selected, setSelected] = useState(selectedValue || options[0]?.value);
+
+  useEffect(() => {
+    setSelected(selectedValue || options[0]?.value);
+  }, [options, selectedValue]);
 
   const handleSelect = (value: string) => {
     setSelected(value);
@@ -45,15 +51,18 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   };
 
   return (
-    <View style={styles.groupContainer}>
-      {options.map((option) => (
-        <RadioButton
-          key={option.value}
-          label={option.label}
-          selected={selected === option.value}
-          onSelect={() => handleSelect(option.value)}
-        />
-      ))}
+    <View style={styles.wrapper}>
+      {label && <Text style={styles.groupLabel}>{label}</Text>}
+      <View style={styles.groupContainer}>
+        {options.map((option) => (
+          <RadioButton
+            key={option.value}
+            label={option.label}
+            selected={selected === option.value}
+            onSelect={() => handleSelect(option.value)}
+          />
+        ))}
+      </View>
     </View>
   );
 };
@@ -62,10 +71,20 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
+    marginRight: 12,
+  },
+  wrapper: {
     marginBottom: 12,
   },
+  groupLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 6,
+    color: "#333",
+  },
   groupContainer: {
-    marginBottom: 12,
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   radio: {
     width: 20,

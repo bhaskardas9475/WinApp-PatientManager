@@ -16,10 +16,12 @@ export const TextArea: React.FC<TextAreaProps> = ({
   onChangeText,
   rows = 4,
 }) => {
-  const [text, setText] = useState(value || "");
+  const [text, setText] = useState("");
 
   const handleChange = (newText: string) => {
-    setText(newText);
+    if (value === undefined) {
+      setText(newText);
+    }
     onChangeText?.(newText);
   };
 
@@ -35,7 +37,7 @@ export const TextArea: React.FC<TextAreaProps> = ({
         ]}
         placeholder={placeholder}
         placeholderTextColor="#999"
-        value={text}
+        value={value ?? text}
         onChangeText={handleChange}
         multiline
         textAlignVertical="top"

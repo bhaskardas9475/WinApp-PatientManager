@@ -1,0 +1,14 @@
+{
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    /* Add this line */
+    "jsx": "react-native", 
+    /* If you still see errors, ensure these are also present */
+    "allowJs": true,
+    "esModuleInterop": true
+  }
+}
