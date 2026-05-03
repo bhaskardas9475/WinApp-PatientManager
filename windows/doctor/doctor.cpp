@@ -10,6 +10,8 @@
 
 #include "SQLiteModule.h"
 
+#include "PrintService.h"
+
 // A PackageProvider containing any turbo modules you define within this app project
 struct CompReactPackageProvider
     : winrt::implements<CompReactPackageProvider, winrt::Microsoft::ReactNative::IReactPackageProvider> {

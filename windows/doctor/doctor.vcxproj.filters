@@ -36,6 +36,9 @@
     <ClInclude Include="SQLiteModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PrintService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="doctor.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sqlite\sqlite3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PrintService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
