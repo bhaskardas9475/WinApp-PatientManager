@@ -99,4 +99,7 @@
     <Error Condition="!Exists('$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.Package.props')" Text="$([System.String]::Format('$(ErrorText)', '$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.Package.props'))" />
     <Error Condition="!Exists('$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.Package.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.Package.targets'))" />
   </Target>
+  <ItemGroup>
+    <PackageReference Update="Microsoft.WindowsAppSDK" Version="2.0.1" />
+  </ItemGroup>
 </Project>
