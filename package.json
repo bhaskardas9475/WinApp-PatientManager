@@ -5,6 +5,7 @@
   "scripts": {
     "start": "react-native start",
     "windows": "npx @react-native-community/cli run-windows",
+    "build": "npx react-native run-windows --release --arch x64",
     "test:windows": "jest --config jest.config.windows.js"
   },
   "dependencies": {
