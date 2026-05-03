@@ -66,6 +66,26 @@ const AddUser = () => {
 
           <Col style={styles.formCol}>
             <TextBox
+              key={`dob-${formVersion}`}
+              label="DOB"
+              placeholder="Enter date of birth"
+              value={form.dob}
+              onChangeText={(value) => updateField("dob", value)}
+            />
+          </Col>
+
+          <Col style={styles.formCol}>
+            <TextBox
+              key={`known-allergies-${formVersion}`}
+              label="Known Allergies"
+              placeholder="Enter known allergies"
+              value={form.knownAllergies}
+              onChangeText={(value) => updateField("knownAllergies", value)}
+            />
+          </Col>
+
+          <Col style={styles.formCol}>
+            <TextBox
               key={`comment-${formVersion}`}
               label="Comment"
               placeholder="Enter comment"
@@ -96,7 +116,14 @@ const AddUser = () => {
       <Section title="User List" style={styles.listSection}>
         <Table
           data={users}
-          cols={["Name", "Phone", "Gender", "Comment"]}
+          cols={[
+            "Name",
+            "Phone",
+            "Gender",
+            "DOB",
+            "Known Allergies",
+            "Comment",
+          ]}
           itemActions={[
             {
               title: "Edit",

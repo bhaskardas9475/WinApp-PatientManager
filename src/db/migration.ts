@@ -1,8 +1,7 @@
-import { USER_MIGRATION } from "@/screens/AddUser/user.controller";
-import { execute } from ".";
+import { migrateUserTable } from "@/screens/AddUser/user.controller";
 
 export default {
   up: async () => {
-    await execute(USER_MIGRATION);
+    await migrateUserTable();
   },
 };

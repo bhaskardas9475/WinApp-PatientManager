@@ -5,12 +5,19 @@ import { escapeSqlValue } from "@/utils/common.utils";
 
 export const TABLE_NAME = "users";
 
-export const USER_MIGRATION = `CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, gender TEXT, comment TEXT)`;
+export const migrateUserTable = async () => {
+  await execute(
+    `CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, gender TEXT, dob TEXT, knownAllergies TEXT, comment TEXT)`,
+  );
+};
+
 export interface UserRecord {
   id: number;
   name: string;
   phone: string;
   gender: string;
+  dob: string;
+  knownAllergies: string;
   comment: string;
 }
 
@@ -18,6 +25,8 @@ export interface UserFormValues {
   name: string;
   phone: string;
   gender: string;
+  dob: string;
+  knownAllergies: string;
   comment: string;
 }
 
@@ -25,6 +34,8 @@ const defaultFormValues: UserFormValues = {
   name: "",
   phone: "",
   gender: "Male",
+  dob: "",
+  knownAllergies: "",
   comment: "",
 };
 
@@ -33,6 +44,8 @@ const mapUser = (row: QueryResult): UserRecord => ({
   name: String(row.name ?? ""),
   phone: String(row.phone ?? ""),
   gender: String(row.gender ?? ""),
+  dob: String(row.dob ?? ""),
+  knownAllergies: String(row.knownAllergies ?? ""),
   comment: String(row.comment ?? ""),
 });
 
@@ -48,7 +61,7 @@ export const useAddUserController = () => {
     setLoading(true);
     try {
       const rows = await query(
-        `SELECT id, name, phone, gender, comment FROM ${TABLE_NAME} ORDER BY id DESC`,
+        `SELECT id, name, phone, gender, dob, knownAllergies, comment FROM ${TABLE_NAME} ORDER BY id DESC`,
       );
       setUsers(rows.map(mapUser));
     } catch (error) {
@@ -83,6 +96,8 @@ export const useAddUserController = () => {
       name: user.name,
       phone: user.phone,
       gender: user.gender || defaultFormValues.gender,
+      dob: user.dob,
+      knownAllergies: user.knownAllergies,
       comment: user.comment,
     });
     setEditingUserId(user.id);
@@ -100,15 +115,17 @@ export const useAddUserController = () => {
       const name = escapeSqlValue(form.name.trim());
       const phone = escapeSqlValue(form.phone.trim());
       const gender = escapeSqlValue(form.gender.trim());
+      const dob = escapeSqlValue(form.dob.trim());
+      const knownAllergies = escapeSqlValue(form.knownAllergies.trim());
       const comment = escapeSqlValue(form.comment.trim());
 
       if (editingUserId === null) {
         await execute(
-          `INSERT INTO ${TABLE_NAME} (name, phone, gender, comment) VALUES ('${name}', '${phone}', '${gender}', '${comment}')`,
+          `INSERT INTO ${TABLE_NAME} (name, phone, gender, dob, knownAllergies, comment) VALUES ('${name}', '${phone}', '${gender}', '${dob}', '${knownAllergies}', '${comment}')`,
         );
       } else {
         await execute(
-          `UPDATE ${TABLE_NAME} SET name='${name}', phone='${phone}', gender='${gender}', comment='${comment}' WHERE id=${editingUserId}`,
+          `UPDATE ${TABLE_NAME} SET name='${name}', phone='${phone}', gender='${gender}', dob='${dob}', knownAllergies='${knownAllergies}', comment='${comment}' WHERE id=${editingUserId}`,
         );
       }
 
